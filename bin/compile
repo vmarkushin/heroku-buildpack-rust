@@ -7,6 +7,8 @@ CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
+echo "Build dir: $BUILD_DIR"
+
 # Export DATABASE_URL at build time, mostly because Diesel is the best way to
 # do SQL in Rust right now, and Diesel will use it to generate code for the
 # database schema.
@@ -29,9 +31,9 @@ BUILD_PATH=""
 # into the target directory, next to your app binary. This makes it easy to
 # run migrations by adding a release step to your Procfile:
 # `release: ./target/release/diesel migration run`
-RUST_INSTALL_DIESEL=0
+RUST_INSTALL_DIESEL=1
 # These flags are passed to `cargo install diesel`, e.g. '--no-default-features --features postgres'
-DIESEL_FLAGS=""
+DIESEL_FLAGS="--no-default--features --features postgres"
 # Default build flags to pass to `cargo build`.
 RUST_CARGO_BUILD_FLAGS="--release"
 
@@ -42,7 +44,8 @@ fi
 
 # Load our configuration variables, if any were specified.
 if [ -f "$BUILD_DIR/RustConfig" ]; then
-    . "$BUILD_DIR/RustConfig"
+    echo "Loading configuration variables"
+    source "$BUILD_DIR/RustConfig"
 fi
 
 # Standard paranoia.
